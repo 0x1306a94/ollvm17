@@ -18,6 +18,19 @@ using std::vector;
 LLVMContext *CONTEXT = nullptr;
 bool obf_function_name_cmd = false;
 
+static bool valueEscapes(const Instruction &Inst) {
+    if (!Inst.getType()->isSized())
+        return false;
+    
+    const BasicBlock *BB = Inst.getParent();
+    for (const User *U : Inst.users()) {
+        const Instruction *UI = cast<Instruction>(U);
+        if (UI->getParent() != BB || isa<PHINode>(UI))
+            return true;
+    }
+    return false;
+}
+
 /**
  * @brief 参考资料:https://www.jianshu.com/p/0567346fd5e8
  *        作用是读取llvm.global.annotations中的annotation值 从而实现过滤函数

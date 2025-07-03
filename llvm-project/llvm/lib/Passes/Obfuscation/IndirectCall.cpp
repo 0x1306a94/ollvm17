@@ -11,6 +11,9 @@ using std::vector;
  * @return PreservedAnalyses 
  */
 PreservedAnalyses IndirectCallPass::run(Function &F, FunctionAnalysisManager &AM){
+    if (this->flag) {
+        outs() << "[Soule] force.run.IndirectCallPass\n";
+    }
     // 判断是否需要开启间接调用
     if (toObfuscate(flag, &F, "icall")){
       doIndirctCall(F);

@@ -12,6 +12,9 @@ using std::vector;
 STATISTIC(Flattened, "Functions flattened");
 
 PreservedAnalyses FlatteningPass::run(Function& F, FunctionAnalysisManager& AM) {
+    if (this->flag) {
+        outs() << "[Soule] force.run.FlatteningPass\n";
+    }
     Function *tmp = &F; // 传入的Function
     // 判断是否需要开启控制流平坦化
     if (toObfuscate(flag, tmp, "fla")) {

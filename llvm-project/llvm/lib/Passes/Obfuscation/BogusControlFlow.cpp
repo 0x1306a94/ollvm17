@@ -139,6 +139,9 @@ static cl::opt<int> ObfTimes("bcf_loop", cl::desc("Choose how many time the -bcf
 BasicBlock *createAlteredBasicBlock(BasicBlock *basicBlock, const Twine &Name = "gen", Function *F = 0);
 
 PreservedAnalyses BogusControlFlowPass::run(Function& F, FunctionAnalysisManager& AM) {
+    if (this->flag) {
+        outs() << "[Soule] force.run.BogusControlFlowPass\n";
+    }
     // Check if the percentage is correct
     if (ObfTimes <= 0){
         errs() << "BogusControlFlow application number -bcf_loop=x must be x > 0";
