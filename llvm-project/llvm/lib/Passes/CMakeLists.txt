@@ -15,7 +15,7 @@ set(OBFUSCATION_SRS
   plugin_reg.cpp
 )
 
-if(BUILD_ANDROID_NDK)
+if(BUILD_ANDROID_NDK OR BUILD_OHOS_NDK)
 
   set(CMAKE_SKIP_BUILD_RPATH ON)
   add_library(Obfuscation SHARED ${OBFUSCATION_SRS})

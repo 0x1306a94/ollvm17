@@ -229,8 +229,11 @@ namespace llvm
             Call->eraseFromParent();
         }
 
-        // NF->getBasicBlockList().splice(NF->begin(), F->getBasicBlockList());
+#if LLVM_VERSION_MAJOR >= 17
         NF->splice(NF->begin(), F);
+#else
+        NF->getBasicBlockList().splice(NF->begin(), F->getBasicBlockList());
+#endif
         // Loop over the argument list, transferring uses of the old arguments over to
         // the new arguments, also transferring over the names as well.
         Function::arg_iterator I2 = NF->arg_begin();
