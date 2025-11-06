@@ -283,14 +283,16 @@ void BogusControlFlowPass::addBogusFlow(BasicBlock *basicBlock, Function &F) {
   // Preparing a condition..
   // For now, the condition is an always true comparaison between 2 float
   // This will be complicated after the pass (in doFinalization())
-  Value *LHS = ConstantFP::get(Type::getFloatTy(F.getContext()), 1.0);
-  Value *RHS = ConstantFP::get(Type::getFloatTy(F.getContext()), 1.0);
+
+  // We need to use ConstantInt instead of ConstantFP as ConstantFP results in
+  // strange dead-loop when injected into Xcode
+  Value *LHS = ConstantInt::get(Type::getInt32Ty(F.getContext()), 1);
+  Value *RHS = ConstantInt::get(Type::getInt32Ty(F.getContext()), 1);
   DEBUG_WITH_TYPE("gen", errs() << "bcf: Value LHS and RHS created\n");
 
   // The always true condition. End of the first block
   Twine *var4 = new Twine("condition");
-  FCmpInst *condition =
-      new FCmpInst(*basicBlock, FCmpInst::FCMP_TRUE, LHS, RHS, *var4);
+  ICmpInst *condition = new ICmpInst(*basicBlock, ICmpInst::ICMP_EQ, LHS, RHS, *var4);
   DEBUG_WITH_TYPE("gen", errs() << "bcf: Always true condition created\n");
 
   // Jump to the original basic block if the condition is true or
@@ -325,8 +327,7 @@ void BogusControlFlowPass::addBogusFlow(BasicBlock *basicBlock, Function &F) {
   originalBB->getTerminator()->eraseFromParent();
   // We add at the end a new always true condition
   Twine *var6 = new Twine("condition2");
-  FCmpInst *condition2 =
-      new FCmpInst(*originalBB, CmpInst::FCMP_TRUE, LHS, RHS, *var6);
+  ICmpInst *condition2 = new ICmpInst(*originalBB, ICmpInst::ICMP_EQ, LHS, RHS, *var6);
   BranchInst::Create(originalBBpart2, alteredBB, (Value *)condition2,
                      originalBB);
   DEBUG_WITH_TYPE("gen", errs()
